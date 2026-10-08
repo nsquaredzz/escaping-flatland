@@ -1,7 +1,8 @@
 """Every figure in the essay, drawn from results/*.json and from closed-form geometry.
 
-    python make_figures.py            # writes ../../public/blog/escaping-flatland/*.webp
-    python make_figures.py --light    # white-background copies in figures-light/ (for the comic blog)
+    python make_figures.py                 # dark theme, writes figures/dark/*.webp
+    python make_figures.py --light         # light theme, writes figures/light/*.webp
+    python make_figures.py --out some/dir  # either theme, somewhere else
 """
 from __future__ import annotations
 
@@ -21,7 +22,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 DARK = dict(bg="#0b0a08", fg="#e9dfc8", dim="#7a7160", rule="#2a2620", amber="#ffb23e", green="#b6f23a", lilac="#a99cff", rust="#d9643a")
 LIGHT = dict(bg="#ffffff", fg="#111111", dim="#6b6b6b", rule="#dddddd", amber="#d97706", green="#15803d", lilac="#6d28d9", rust="#dc2626")
 C = dict(DARK)
-OUT = os.path.join(HERE, "..", "..", "public", "blog", "escaping-flatland")
+OUT = os.path.join(HERE, "figures", "dark")
 LABEL = {"euclid": "Euclidean", "euclid_sq": "Euclidean, squared distance", "ball": "Poincare ball", "polydisk": "product of disks"}
 NET = {"euclid": "Euclidean GCN", "euclid_modrelu": "Euclidean, phase-keeping activation", "ball": "ball, tangent mean", "polydisk": "disks, gyromidpoint"}
 
@@ -308,11 +309,14 @@ FIGS = {"tree": fig_tree, "capacity": fig_capacity, "distance": fig_distance, "m
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--light", action="store_true")
+    ap.add_argument("--out", help="output directory")
     ap.add_argument("--only", nargs="*", default=list(FIGS))
     args = ap.parse_args()
     if args.light:
         C.update(LIGHT)
-        OUT = os.path.join(HERE, "figures-light")
+        OUT = os.path.join(HERE, "figures", "light")
+    if args.out:
+        OUT = args.out
     style()
     for name in args.only:
         try:
