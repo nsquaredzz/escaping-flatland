@@ -7,23 +7,16 @@ on:
 
 jobs:
   test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest]
+    # Linux only: hosted macOS runners were not being assigned when this was set up.
+    # The same tests pass on macOS (Apple silicon) locally.
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - name: Install PyTorch (CPU)
-        run: |
-          if [ "$RUNNER_OS" = "Linux" ]; then
-            pip install torch --index-url https://download.pytorch.org/whl/cpu
-          else
-            pip install torch
-          fi
+        run: pip install torch --index-url https://download.pytorch.org/whl/cpu
       - run: pip install numpy scipy nltk pytest
       - name: Geometry and model tests
         run: python -m pytest tests -q
